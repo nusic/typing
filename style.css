@@ -1,0 +1,79 @@
+html, body {
+	margin: 0; 
+	height: 100%;
+	/*overflow: hidden;*/
+	touch-action: manipulation;
+}
+
+body {
+	background-color: rgba(40, 40, 47, 1);
+	margin: 20px 20px;
+	padding-top: 20px;
+	font-family: monospace;
+}
+
+#game-container {
+	margin: auto auto;
+	width: 500px;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+#text-container {
+	padding: 10px;
+	font-size: 1.5em;
+	background-color: rgba(125, 125, 125, 0.1);
+}
+
+#text span{
+	outline: none;
+	box-sizing: border-box;
+	white-space: pre-wrap;;
+	/*white-space: pre;*/
+}
+
+.completed {
+	background-color: rgba(0, 255, 0, 0.2);
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.incomplete {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.current-char {
+	color: white;
+	/*color: rgba(0, 255, 255, 0.5);*/
+	background-color: rgba(0, 255, 255, 0.5);
+}
+
+.completed.typo {
+	background-color: rgba(255, 0, 0, 0.5);
+}
+
+.repaired {
+	background-color: rgba(255, 255, 0, 0.2);
+}
+
+.incomplete.typo, .completed.repaired {
+	background-color: rgba(255, 255, 0, 0.2);
+}
+
+.current-char.typo {
+	/*background-color: rgba(255, 0, 0, 0.5);*/
+}
+
+@media (max-width: 600px) {
+  #game-container {
+    width: 300px;
+  }
+}
+
+#type-stats {
+	/*display: block;*/
+	padding-top: 20px;
+	margin: auto auto;
+}
+
+#s span {
+	/*color: rgba(255, 255, 255, 0.2);*/
+}

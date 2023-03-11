@@ -1,0 +1,29 @@
+<head>
+	<meta charset="UTF-8">
+	<title>Typing</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+</head>
+<body scroll="no">
+	<div id="game-container">
+		<div id="text-container">
+			<div id="text"></div>
+		</div>
+		<div id="type-stats">
+			<p>Accuracy: <span id="type-accuracy"></span></p>
+			<p>Steadiness: <span id="type-steadiness"></span></p>
+			<p>Speed: <span id="type-speed"></span></p>
+
+			<!-- <p>Best: <span id="highscore"></span></p> -->
+		</div>
+		<pre id="analysis"></pre>
+	</div>
+</body>
+
+<script type="text/javascript" src="./keyboard_layout.js"></script>
+<script type="text/javascript" src="./stats.js"></script>
+<script type="text/javascript" src="./type_event_logger.js"></script>
+<script type="text/javascript" src="./type_event_analysis.js"></script>
+<script type="text/javascript" src="./typing.js"></script>

@@ -67,7 +67,12 @@ TypingGame.prototype.getText = function() {
 	if (this.textStack && this.textStack.length > 0) {
 		return this.textStack[this.textStack.length - 1];
 	}
-	return "A Lisp list is implemented as a singly linked list.[51] Each cell of this list is called a cons (in Scheme, a pair), and is composed of two pointers, called the car and cdr. These are respectively equivalent to the data and next fields discussed in the article linked list.";
+	const samples = [];
+	samples[0] = "A Lisp list is implemented as a singly linked list.[51] Each cell of this list is called a cons (in Scheme, a pair), and is composed of two pointers, called the car and cdr. These are respectively equivalent to the data and next fields discussed in the article linked list.";
+	samples[1] = "The path of the righteous man is beset on all sides. By the inequities of the selfish and the tyranny of evil men. Blessed is he who, in the name of charity and good will, shepherds the weak through the valley of darkness. For he is truly his brother's keeper and the finder of lost children. And I will strike down upon thee, with great vengeance and furious anger, those who attempt to poison and destroy my brothers. And you will know my name is the Lord, when I lay my vengeance upon thee"
+	samples[2] = "The quick brown fox jumps over the lazy dog"
+
+	return samples[Math.floor(Math.random() * samples.length)];
 };
 
 TypingGame.prototype.onKeyDown = function(e) {
@@ -138,24 +143,35 @@ TypingGame.prototype.onKeyDown = function(e) {
 	if (completed === corrects) {
 		this.accuracyElement.innerHTML = "Perfect";
 	} else {
-		const errorEvery = completed / (completed - corrects) || Infinity;
-		this.accuracyElement.innerHTML = "Typo every " + Math.floor(errorEvery) + ":th key";
+		this.accuracyElement.innerHTML = Math.round(100 * corrects / completed) + "%";
+		// const errorEvery = completed / (completed - corrects) || Infinity;
+		// this.accuracyElement.innerHTML = "Typo every " + Math.floor(errorEvery) + ":th key";
 	}
 	
-	this.steadinessElement.innerHTML = (100*analysis.steadiness*analysis.steadiness).toFixed(1) + '%';
+	this.steadinessElement.innerHTML = (100*analysis.steadiness).toFixed(1) + '%';
 	
 	const totalTime = this.typeEventLogger.lastEvent().t / 1000;
-	this.speedElement.innerHTML = ratio(completedElements.length, "chars", totalTime, "s");
+	this.speedElement.innerHTML = ratio(completedElements.length, "letters", totalTime, "s");
 
 	const incompleted = document.getElementsByClassName('incomplete').length;
-	
-	this.analysisElement.innerHTML = JSON.stringify(analysis, null, 2);
+
+	if (!currentElement.nextSibling) {
+		
+		let html = '<p>Curious how to improve? Here is where you hestitated:</p>'
+			
+		for (a of analysis) {
+			html += `<p>It took ${a.dt}ms to type "${a.key}" in "${a.context}"`;	
+		}
+		
+
+		this.analysisElement.innerHTML = html;
+	}
 };
 
 
 function ratio(num, num_unit, den, den_unit) {
 	const frac = num / den;
-	return frac.toFixed(1) + " " +num_unit + "/" + den_unit+ " (" + num.toFixed(0) + " " + num_unit + " / " + den.toFixed(0) + " " + den_unit + ")";
+	return frac.toFixed(1) + " " +num_unit + "/" + den_unit;//+ " (" + num.toFixed(0) + " " + num_unit + " / " + den.toFixed(0) + " " + den_unit + ")";
 }
 
 function percentRatio2(num, num_unit, den, den_unit) {

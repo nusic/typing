@@ -123,30 +123,24 @@ TypeEventAnalysis.prototype.analysis = function(events) {
 	const dtStats = new Stats(transitions.map(key('dt')));
 	const extraSlowThreshold = 3 * dtStats.sd();
 	const extraSlow = transitions
-		.filter(transition => transition.dt > extraSlowThreshold)
+		.filter(t => t.dt > extraSlowThreshold)
+		// .filter(t => t.e2.key !== "Backspace")
 		.sort((t1, t2) => t2.dt - t1.dt)
 		.slice(0, 5);
 
 	const source = this.toSource(events);
 	const extraSlowSummary = extraSlow.map(t => ({dt: t.dt, key: t.e2.key, context: this.context(source, t)}));
-
-	return {
-		steadiness: this.steadiness(correctTypeEvents, dtStats),
-		// dt: dtStats.summary(),
-		extraSlow: extraSlowSummary
-	}
+	return extraSlowSummary;
 };
 
 TypeEventAnalysis.prototype.steadiness = function(es, dt) {
-	const medianDt = dt.summary().median;
-	// console.log(medianDt);
-	const sumR2 = dt.values.reduce((err, dt) => err + Math.pow(dt - medianDt, 2), 0);
+	const meanDt = dt.summary().mean;
+	const sumR2 = dt.values.reduce((err, dt) => err + Math.pow(dt - meanDt, 2), 0);
 	const error = Math.sqrt(sumR2);
-
 	const last = es[es.length - 1];
 	const normalizedError = error / last.t; // in [0, 1]
 	const steadiness = 1 - normalizedError; // in [0, 1]
-	return steadiness;
+	return steadiness * steadiness;
 };
 
 

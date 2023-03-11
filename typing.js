@@ -3,15 +3,20 @@ var typingGame;
 function TypingGame(boardContainerId, gameStatsContainerId){
 	this.textElement = document.getElementById("text");
 
-	this.typeStatsElement = document.getElementById("type-stats");
+	this.correctedAccuracyElement = document.getElementById("type-corrected-accuracy");
 	this.accuracyElement = document.getElementById("type-accuracy");
 	this.steadinessElement = document.getElementById("type-steadiness");
 	this.speedElement = document.getElementById("type-speed");
+
+	this.correctedAccuracyGradingElement = document.getElementById("type-corrected-accuracy-grading");
+	this.accuracyGradingElement = document.getElementById("type-accuracy-grading");
+	this.steadinessGradingElement = document.getElementById("type-steadiness-grading");
+	this.speedGradingElement = document.getElementById("type-speed-grading");
+
+	this.typeStatsElement = document.getElementById("type-stats");
 	this.analysisElement = document.getElementById("analysis");
 	this.typeEventLogger = new TypeEventLogger();
 
-
-	// this.highscore = 1;
 	this.newGame();
 
 	window.addEventListener('paste', e => {
@@ -36,15 +41,18 @@ function TypingGame(boardContainerId, gameStatsContainerId){
 
 TypingGame.prototype.newGame = function(textStack) {
 	this.mistakes = 0;
+	this.repairs = 0;
 	this.textStack = textStack;
 	this.resetDOM();
 	this.typeEventLogger.reset();
 };
 
 TypingGame.prototype.resetDOM = function() {
-	// this.highscoreElement.innerHTML = 0;;
-	this.speedElement.innerHTML = "-";
-	this.steadinessElement.innerHTML = "-";
+	this.correctedAccuracyElement.innerHTML = "0%";
+	this.accuracyElement.innerHTML = "0%";
+	this.steadinessElement.innerHTML = "0%";
+	this.speedElement.innerHTML = "0 letters/s";
+
 
 	var e = this.textElement;
 	while (e.firstChild) {
@@ -94,7 +102,6 @@ TypingGame.prototype.onKeyDown = function(e) {
 		else {
 			console.error('no current element!');
 		}
-		
 		return;
 	}
 
@@ -125,6 +132,7 @@ TypingGame.prototype.onKeyDown = function(e) {
 		} else if (currentElement.classList.contains('typo')) {
 			currentElement.classList.remove('typo');
 			currentElement.classList.add('repaired');
+			this.repairs++;
 		}
 	}
 
@@ -140,48 +148,52 @@ TypingGame.prototype.onKeyDown = function(e) {
 	const typos = document.getElementsByClassName('typo').length;
 	const repairs = document.getElementsByClassName('repaired').length;
 	const corrects = completed - typos - repairs;
-	if (completed === corrects) {
-		this.accuracyElement.innerHTML = "Perfect";
-	} else {
-		this.accuracyElement.innerHTML = Math.round(100 * corrects / completed) + "%";
-		// const errorEvery = completed / (completed - corrects) || Infinity;
-		// this.accuracyElement.innerHTML = "Typo every " + Math.floor(errorEvery) + ":th key";
-	}
-	
-	this.steadinessElement.innerHTML = (100*analysis.steadiness).toFixed(1) + '%';
-	
-	const totalTime = this.typeEventLogger.lastEvent().t / 1000;
-	this.speedElement.innerHTML = ratio(completedElements.length, "letters", totalTime, "s");
+
+	const correctedAccuracy = (completed - typos) / completed;
+	const accuracy = corrects / completed;
+	const steadiness = analysis.steadiness;
+	const lettersPerSecond = completedElements.length / (this.typeEventLogger.lastEvent().t / 1000);
+
+	this.correctedAccuracyElement.innerHTML = Math.floor(100 * correctedAccuracy) + "%";
+	this.accuracyElement.innerHTML = Math.floor(100 * accuracy) + "%";
+	this.steadinessElement.innerHTML = Math.floor(100*analysis.steadiness) + '%';
+	this.speedElement.innerHTML = lettersPerSecond.toFixed(1) + " letters/s";
 
 	const incompleted = document.getElementsByClassName('incomplete').length;
 
 	if (!currentElement.nextSibling) {
-		
-		let html = '<p>Curious how to improve? Here is where you hestitated:</p>'
-			
-		for (a of analysis) {
-			html += `<p>It took ${a.dt}ms to type "${a.key}" in "${a.context}"`;	
-		}
-		
+		this.correctedAccuracyGradingElement.innerHTML = gradingFromThresholds([1.0, .99, .98, .97, .96, .95], correctedAccuracy)
+		this.accuracyGradingElement.innerHTML = gradingFromThresholds([1.0, .97, .93, .88, .80, .70], accuracy)
+		this.steadinessGradingElement.innerHTML = gradingFromThresholds([1, .9, .8, .7, .6, .5], steadiness)
+		this.speedGradingElement.innerHTML = gradingFromThresholds([10, 8, 6, 4, 2, 1], lettersPerSecond)
 
+		let html = "<h3>Want to improve?</h3>";
+		html += "<p>Here is what keys took the longest:</p>";
+		html += "<ol>";
+		for (slow of analysis.extraSlow) {
+			html += `<li>It took ${slow.dt} ms to type "${slow.key}" in "${slow.context}"</li>`;
+		}
+		html += "</ol>"
 		this.analysisElement.innerHTML = html;
 	}
 };
 
-
-function ratio(num, num_unit, den, den_unit) {
-	const frac = num / den;
-	return frac.toFixed(1) + " " +num_unit + "/" + den_unit;//+ " (" + num.toFixed(0) + " " + num_unit + " / " + den.toFixed(0) + " " + den_unit + ")";
-}
-
-function percentRatio2(num, num_unit, den, den_unit) {
-	const frac = 100 * Math.pow(num / den, 2);
-	return frac.toFixed(1) + "% (" + num.toFixed(0) + " " + num_unit + " / " + den.toFixed(0) + " " + den_unit + ")^2";
-}
-
-function percentRatio(num, num_unit, den, den_unit) {
-	const frac = 100*num / den;
-	return frac.toFixed(1) + "% (" + num.toFixed(0) + " " + num_unit + " / " + den.toFixed(0) + " " + den_unit + ")";
+function gradingFromThresholds(threshold, value) {
+	const grades = [
+		"⭐⭐⭐⭐⭐",
+		"⭐⭐⭐⭐",
+		"⭐⭐⭐",
+		"⭐⭐",
+		"⭐",
+		"😞"
+	]
+	var i = 0;
+	for (; i<threshold.length && i<grades.length; i++) {
+		if (threshold[i] <= value) {
+			break;
+		}
+	}
+	return grades[i];
 }
 
 TypingGame.prototype.store = function(key, value) {

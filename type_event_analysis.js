@@ -130,7 +130,10 @@ TypeEventAnalysis.prototype.analysis = function(events) {
 
 	const source = this.toSource(events);
 	const extraSlowSummary = extraSlow.map(t => ({dt: t.dt, key: t.e2.key, context: this.context(source, t)}));
-	return extraSlowSummary;
+	return {
+		steadiness: this.steadiness(correctTypeEvents, dtStats),
+		extraSlow: extraSlowSummary
+	}
 };
 
 TypeEventAnalysis.prototype.steadiness = function(es, dt) {
@@ -138,6 +141,7 @@ TypeEventAnalysis.prototype.steadiness = function(es, dt) {
 	const sumR2 = dt.values.reduce((err, dt) => err + Math.pow(dt - meanDt, 2), 0);
 	const error = Math.sqrt(sumR2);
 	const last = es[es.length - 1];
+
 	const normalizedError = error / last.t; // in [0, 1]
 	const steadiness = 1 - normalizedError; // in [0, 1]
 	return steadiness * steadiness;

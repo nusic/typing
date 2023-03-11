@@ -18,6 +18,16 @@ body {
 	color: rgba(255, 255, 255, 0.5);
 }
 
+table {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+td.col1 {
+	text-align: right;
+}
+
+
+
 #text-container {
 	padding: 10px;
 	font-size: 1.5em;

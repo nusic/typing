@@ -8,14 +8,37 @@
 </head>
 <body scroll="no">
 	<div id="game-container">
-		<p>Paste something to type it<p>
+		<p>Paste some text (⌘ + V)<p>
 		<div id="text-container">
 			<div id="text"></div>
 		</div>
 		<div id="type-stats">
+			<table>
+				<tr>
+					<td class=col1>Corrected Accuracy: </td>
+					<td id="type-corrected-accuracy"></td>
+					<td id="type-corrected-accuracy-grading"></td>
+				</tr>
+				<tr>
+					<td class=col1>Accuracy: </td>
+					<td id="type-accuracy"></td>
+					<td id="type-accuracy-grading"></td>
+				</tr>
+				<tr>
+					<td class=col1>Steadiness: </td>
+					<td id="type-steadiness"></td>
+					<td id="type-steadiness-grading"></td>
+				</tr>
+				<tr>
+					<td class=col1>Speed: </td>
+					<td id="type-speed"></td>
+					<td id="type-speed-grading"></td>
+				</tr>
+			</table>
+			<!-- <p>Corrected Accuracy: <span id="type-corrected-accuracy"></span></p>
 			<p>Accuracy: <span id="type-accuracy"></span></p>
 			<p>Steadiness: <span id="type-steadiness"></span></p>
-			<p>Speed: <span id="type-speed"></span></p>
+			<p>Speed: <span id="type-speed"></span></p> -->
 
 			<!-- <p>Best: <span id="highscore"></span></p> -->
 		</div>
